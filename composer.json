@@ -1,0 +1,40 @@
+{
+  "name": "maiksimov/laravel-vodafone-a2p",
+  "version": "1",
+  "description": "Send Laravel Notifications with the Vodafone a2p Api",
+  "homepage": "https://github.com/maiksimov/laravel-vodafone-a2p",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Michael Somov",
+      "email": "somov.michail.yur@gmail.com",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^8.1.2",
+    "laravel/framework": "^9.19",
+    "illuminate/notifications": "^9.19",
+    "illuminate/support": "^9.19",
+    "guzzlehttp/guzzle": "^7.2"
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.4.4",
+    "phpunit/phpunit": "^9.5.10"
+  },
+  "autoload": {
+    "psr-4": {
+      "A2PVodafone\\": "src"
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "A2PVodafone\\Providers\\VodafoneServiceProvider"
+      ]
+    }
+  }
+}

@@ -1,0 +1,8 @@
+/vendor
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+yarn-error.log
+/.idea
+/.vscode
