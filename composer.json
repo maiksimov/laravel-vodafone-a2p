@@ -1,6 +1,8 @@
 {
   "name": "maiksimov/laravel-vodafone-a2p",
-  "version": "1",
+  "version": "1.0",
+  "minimum-stability": "dev",
+  "prefer-stable": true,
   "description": "Send Laravel Notifications with the Vodafone a2p Api",
   "homepage": "https://github.com/maiksimov/laravel-vodafone-a2p",
   "license": "MIT",
