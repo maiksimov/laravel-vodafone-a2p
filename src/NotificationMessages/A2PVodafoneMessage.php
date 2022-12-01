@@ -2,39 +2,26 @@
 
 namespace A2PVodafone\NotificationMessages;
 
-use Illuminate\Notifications\Notification;
-
 class A2PVodafoneMessage
 {
-    protected $from;
-    protected $to;
-    protected $text;
+    protected mixed $content;
 
-    public function __construct()
+    public function __construct($content = null)
     {
-        return $this;
-    }
-
-    public function from($from)
-    {
-        $this->from = $from;
+        $this->content = $content;
 
         return $this;
     }
 
-    public function to($to)
+    public function setContent($content): static
     {
-        $this->to = $to;
+        $this->content = $content;
 
         return $this;
     }
 
-    public function text($text)
+    public function getContent()
     {
-        $this->text = $text;
-
-        return $this;
+        return $this->content;
     }
-
-    public function send(){}
 }

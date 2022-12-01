@@ -2,13 +2,17 @@
 namespace A2PVodafone;
 
 use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use Illuminate\Support\Facades\Storage;
 
 class VodafoneClient
 {
-    const TOKEN_FILE_NAME = 'a2p_token';
-    protected string $validityPeriod = '000000000200000R'; // 2 min
-    protected string $baseUrl = 'https://a2p.vodafone.ua';
+    const TOKEN_FILE_NAME = 'a2p_token.json';
+    const BASE_API_URL = 'https://a2p.vodafone.ua';
+    const TOKEN_ENDPOINT = '/uaa/oauth/token';
+    const SEND_MESSAGE_ENDPOINT = '/communication-event/api/communicationManagement/v2/communicationMessage/send';
+    const TWO_MINUTES_PERIOD = '000000000200000R';
+
     private mixed $username;
     private mixed $password;
     private mixed $authorization;
@@ -24,6 +28,9 @@ class VodafoneClient
         $this->client = new Client();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function getAccessToken(): string
     {
         $this->syncToken();
@@ -31,6 +38,9 @@ class VodafoneClient
         return $this->getTokenContent()['access_token'];
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function syncToken(): void
     {
         $json = $this->getJson();
@@ -40,6 +50,9 @@ class VodafoneClient
         }
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function getJson(): string
     {
         if(!$this->isTokenExists() || !$this->isTokenHasValidStructure()) {
@@ -108,9 +121,12 @@ class VodafoneClient
         return true;
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function newAccessTokenRequest(): string
     {
-        $response = $this->client->post($this->baseUrl . '/uaa/oauth/token?' . http_build_query([
+        $response = $this->client->post(self::BASE_API_URL . self::TOKEN_ENDPOINT . '?' . http_build_query([
             'grant_type' => 'password',
             'username' => $this->username,
             'password' => $this->password,
@@ -119,9 +135,12 @@ class VodafoneClient
         return $response->getBody()->getContents();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     private function refreshAccessTokenRequest(string $refresh_token): string
     {
-        $response = $this->client->post($this->baseUrl . '/uaa/oauth/token?' . http_build_query([
+        $response = $this->client->post(self::BASE_API_URL . self::TOKEN_ENDPOINT . '?' . http_build_query([
                 'grant_type' => 'refresh_token',
                 'refresh_token' => $refresh_token,
                 'password' => $this->password,
@@ -130,15 +149,18 @@ class VodafoneClient
         return $response->getBody()->getContents();
     }
 
+    /**
+     * @throws GuzzleException
+     */
     public function send($to, $content)
     {
         $response = $this->client->post(
-            $this->baseUrl . '/communication-event/api/communicationManagement/v2/communicationMessage/send',
+            self::BASE_API_URL . self::SEND_MESSAGE_ENDPOINT,
             [
                 'headers' => [
                     'Content-Type'=> 'application/json',
                     'Accept'=> '*/*',
-                    'Authorization'=> 'bearer' . $this->getAccessToken(),
+                    'Authorization'=> 'bearer ' . $this->getAccessToken(),
                 ],
                 'json' => [
                     'type' => 'SMS',
@@ -159,13 +181,13 @@ class VodafoneClient
                         ],
                         [
                             'name' => 'VALIDITY.PERIOD',
-                            'value' => $this->validityPeriod
+                            'value' => self::TWO_MINUTES_PERIOD
                         ],
                     ],
                 ],
             ]
         );
 
-        return $response->getBody()->getContents();
+        return json_decode($response->getBody()->getContents()) ?? null;
     }
 }

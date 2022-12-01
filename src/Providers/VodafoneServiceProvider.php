@@ -16,7 +16,7 @@ class VodafoneServiceProvider extends ServiceProvider
     public function register()
     {
         $this->app->bind(VodafoneClient::class, function () {
-            return new VodafoneClient(config('vodafone_a2p.username'), config('vodafone_a2p.password'));
+            return new VodafoneClient();
         });
     }
 }
